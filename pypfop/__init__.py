@@ -8,11 +8,17 @@ from pypfop.conversion import xml_to_fo_with_style
 
 __version__ = '0.1'
 
+BASEDIR =  os.path.join(os.getcwd(), os.path.dirname(__file__))
+SKELDIR = os.path.join(BASEDIR, 'skeletons')
 PDF_VIEWER = 'evince'
 FOP_ENV_VAR = 'FOP_CMD'
 VALID_OFORMATS = frozenset(('awt', 'pdf', 'mif', 'rtf',
                             'tiff', 'png', 'pcl', 'ps', 'txt'))
 
+
+def skeldir_for(tname):
+    return os.path.join(SKELDIR, tname)
+    
 
 class Document(object):
     """Basic document, you should define the `__template__` attribute
@@ -154,4 +160,5 @@ class Document(object):
                 if self.show_doc and oformat == 'pdf':
                     subp.call([PDF_VIEWER, ofilepath])
                 return ofilepath
+
 

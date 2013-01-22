@@ -3,10 +3,26 @@
 Python Preprocessor of the Formating Objects Processor [pypfop]
 ===============================================================
 
-Preprocessor to the Apache FOP, focused in PDF generation.
+Preprocessor to the `Apache FOP`_..
+
+How does it works?
+------------------
+It does what the huge title is implying, preprocess a *higher* level template
+to generate *dynamically* an specifoc `XSL-FO`_. document, which then gets 
+feeded to `Apache FOP`_. to generate the expected output. So that means that
+this packages *requires Java*  ``>_<'``, but fear not my python comrade it is
+almost transparent to the python application.
 
 
+Why!
+----
+
+This project it use to be part of a larger project of one of my customers, 
+which I decide early on that I will use *only python 3*, terrible decision 
+if you want to generate pdf files easily or at least at the moment.
+I was looking to have some kind of *template* to the very rigid format of
+the average invoice and billing order, so pypfop came to relieve that pain.
 
 
-
-
+.. _`Apache FOP`: https://xmlgraphics.apache.org/fop/
+.. _XSL-FO: https://en.wikipedia.org/wiki/XSL_Formatting_Objects

@@ -1,5 +1,5 @@
 import os
-from distutils.core import setup
+from setuptools import setup
 
 REPODIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -53,6 +53,7 @@ setup(name='pypfop',
       packages=['pypfop',],
       classifiers=classifiers,
       install_requires=requires,
+      include_package_data=True,
       platforms=['linux2', 'win32', 'cygwin', 'darwin'],
       description=description,
       long_description=longdesc)
