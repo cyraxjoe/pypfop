@@ -1,2 +1,2 @@
 <%inherit file="single-page-base.fo.mako" />
-<block>Hello world!</block>
+<block>Hello ${name}!</block>

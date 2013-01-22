@@ -13,6 +13,34 @@ feeded to `Apache FOP`_. to generate the expected output. So that means that
 this packages *requires Java*  ``>_<'``, but fear not my python comrade it is
 almost transparent to the python application.
 
+In general the internal workflow is::
+
+    template ->  mako -> apply css ->  xsl-fo ->  fop -> *Document*
+
+Installation
+------------
+
+1. Install pypfop::
+
+    pip install pypfop
+
+2. Install `Apache FOP`_.:
+
+   #. Download the binary package of fop1.1 either the  zip_. or tar_. package.
+   #. Decompress in wherever place you like and set environment variable ``FOP_CMD``
+      to the ``bin/fop`` of the decompressed folder. [1]_.
+
+
+Usage
+-----
+
+About XSL-FO syntax
+^^^^^^^^^^^^^^^^^^^
+
+As you should notice already it is required to now how to format xsl-fo documents
+which in most part are very similar to the HTML counterparts, the best reference
+that I could find online is in the `XML Bible`_.
+
 
 Why!
 ----
@@ -23,6 +51,10 @@ if you want to generate pdf files easily or at least at the moment.
 I was looking to have some kind of *template* to the very rigid format of
 the average invoice and billing order, so pypfop came to relieve that pain.
 
+.. [1] Actually you can set the command at another level, check the examples. 
 
 .. _`Apache FOP`: https://xmlgraphics.apache.org/fop/
 .. _XSL-FO: https://en.wikipedia.org/wiki/XSL_Formatting_Objects
+.. _zip: http://apache.webxcreen.org/xmlgraphics/fop/binaries/fop-1.1-bin.zip
+.. _tar: http://apache.webxcreen.org/xmlgraphics/fop/binaries/fop-1.1-bin.tar.gz
+.. _`XML Bible`:  http://www.ibiblio.org/xml/books/bible3/chapters/ch16.html
