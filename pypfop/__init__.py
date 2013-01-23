@@ -39,15 +39,15 @@ class Document(object):
     def __init__(self, template=None, stylesheets=(), oformat='pdf',
                  instparams=None, styledir=None, fop_cmd=None,
                  tempdir=None, debug=False, show=False):
+        self.styledir = styledir or self.__style_dir__
+        self.tempdir = tempdir or self.__tempdir__
+        self.show_doc = show
+        self.debug = debug
         self.template = self._check_template(template)
         self.oformat = self._check_oformat(oformat)
         self.fop_cmd = self._find_fop_cmd(fop_cmd)
         self.defparams = self._get_inst_params(instparams)
         self.ssheets = self._ssheets_with_abspath(stylesheets)
-        self.styledir = styledir or self.__style_dir__
-        self.tempdir = tempdir or self.__tempdir__
-        self.show_doc = show
-        self.debug = debug
 
 
     def _check_template(self, template):
@@ -97,6 +97,8 @@ class Document(object):
 
 
     def _ssheets_with_abspath(self, ssheets):
+        if isinstance(ssheets, str): 
+            ssheets = [ssheets,]
         return [os.path.join(self.styledir, sheet)
                 for sheet in itertools.chain(self.__style_sheets__, ssheets)]
             
@@ -104,9 +106,9 @@ class Document(object):
     def _debug_msg(self, msg, label='DEBUG'):
         if self.debug:  # TODO: Improve this method.
             if isinstance(msg, str):
-                print('%s: %s' % (label, msg))
+                print('%s: %s' % (label, msg), file=os.sys.stderr)
             else:
-                print('%s: %s' % (label, msg.decode()))
+                print('%s: %s' % (label, msg.decode()), file=os.sys.stderr)
 
     def _get_inst_params(self, params):
         if isinstance(params, dict) and params:

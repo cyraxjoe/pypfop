@@ -1,0 +1,13 @@
+@import url("general.css");
+@import url("colors.css");
+
+
+#main-table > table-header > table-row{
+    text-align: center;
+    font-weight: bold;
+}
+
+#main-table > table-header table-cell{
+    padding: 2mm 0 0mm;
+}
+
