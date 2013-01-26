@@ -1,1 +1,3 @@
 recursive-include pypfop *.mako
+include LICENSE
+include CHANGES

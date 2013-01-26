@@ -7,7 +7,8 @@ import subprocess as subp
 
 from pypfop.conversion import xml_to_fo_with_style
 
-__version__ = '0.1'
+__version__ = '0.1.0'
+__version_info__ = __version__.split('.')
 
 BASEDIR =  os.path.join(os.getcwd(), os.path.dirname(__file__))
 SKELDIR = os.path.join(BASEDIR, 'skeletons')
