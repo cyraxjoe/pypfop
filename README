@@ -1,21 +1,22 @@
 .. -*- rst -*-
 
-Python Preprocessor of the Formating Objects Processor [pypfop]
-===============================================================
+Python Preprocessor of the Formatting Objects Processor [pypfop]
+================================================================
 
-Preprocessor to the `Apache FOP`_..
+Document preprocessor for `Apache FOP`_.
 
 How does it works?
 ------------------
 It does what the huge title is implying, preprocess a *higher* level template
-to generate *dynamically* an specifoc `XSL-FO`_. document, which then gets 
-feeded to `Apache FOP`_. to generate the expected output. So that means that
-this packages *requires Java*  ``>_<'``, but fear not my python comrade it is
-almost transparent to the python application.
+to generate *dynamically* an specific `XSL-FO`_ document, which then gets 
+fed to `Apache FOP`_ to generate the expected output. So that means that
+this packages *requires Java*  ``>_<'``, but fear not!, it is almost transparent 
+to the python application.
 
 In general the internal workflow is::
 
     template ->  mako -> apply css ->  xsl-fo ->  fop -> *Document*
+
 
 Installation
 ------------
@@ -24,22 +25,237 @@ Installation
 
     pip install pypfop
 
-2. Install `Apache FOP`_.:
+2. Install `Apache FOP`_:
 
-   #. Download the binary package of fop1.1 either the  zip_. or tar_. package.
+   #. Download the binary package of fop1.1 either the  zip_ or tar_ package.
    #. Decompress in wherever place you like and set environment variable ``FOP_CMD``
-      to the ``bin/fop`` of the decompressed folder. [1]_.
+      to the ``bin/fop`` of the decompressed folder. [1]_
 
 
 Usage
 -----
 
+The language
+^^^^^^^^^^^^^
+
+The language to generate the documents is almost the same as the xsl-fo, the only
+difference is that is not necessary to set the xml namespace to all the elements,
+for example::
+
+   <fo:table>
+    <fo:table-header>
+       <fo:table-row>
+          <fo:table-cell>
+            <fo:block>Project</fo:block>
+          </fo:table-cell>
+       </fo:table-row>
+    </fo:table-header>
+    <fo:table-body>
+       <fo:table-row>
+         <fo:table-cell>
+            <fo:block>pypfop</fo:block>
+        </fo:table-cell>
+       </fo:table-row>
+    </fo:table-body>
+   </fo:table>
+
+can be written like this::
+  
+   <table>
+    <table-header>
+       <table-row>
+          <table-cell>
+            <block>Project</block>
+          </table-cell>
+       </table-row>
+    </table-header>
+    <table-body>
+       <table-row>
+         <table-cell>
+            <block>pypfopp</block>
+        </table-cell>
+       </table-row>
+    </table-body>
+   </table>
+
+
+The higher level template language
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+At the time the only supported template language is mako_ it should not be very
+complicated to extend to your favorite template language based in the implementation
+of mako (which is pretty straight forward) and hopefully contribute back to the project :).
+
+For example the previous table can be generated with this mako template assuming the
+`header` and `rows` variables are passed to the `Document.generate` method::
+
+
+    <table>
+      <table-header>
+        <table-row>
+          % for name in header:
+          <table-cell>
+            <block>${name}</block>
+          </table-cell>
+          % endfor
+        </table-row>
+      </table-header>
+      <table-body>
+        % for row in rows:
+           <table-row>
+         % for cell in row:  
+            <table-cell>
+              <block>${cell}</block>
+            </table-cell>
+         % endfor
+           </table-row>
+        % endfor
+      </table-body>
+    </table>
+
+
+Skeletons
+^^^^^^^^^
+The previous examples are really just a fragment a document to be able to generate
+a full document with metadata, paper size, margins, etc. To avoid the repetitive
+work to write this kind of base document pypfop come with skeletons documents, the
+purpose if this documents is to be inherited at each template, at the time
+the only implemented skeleton is in `pypfop/skeletons/mako/simple-letter-base.fo.mako`,
+which include place holders for metadata about the document and two regions, body
+and footer, with a few defaults, which of course can be overwritten with the
+appropriate parameters.
+
+To be a fully functional template for pypfop the previous table need to be like this.
+
+
+*simple-table.fo.mako*::
+
+    <%inherit file="simple-letter-base.fo.mako" />
+    <table id="main-table">
+      <table-header>
+        <table-row>
+          % for name in header:
+          <table-cell>
+            <block>${name}</block>
+          </table-cell>
+          % endfor
+        </table-row>
+      </table-header>
+      <table-body>
+        % for row in rows:
+           <table-row>
+         % for cell in row:  
+            <table-cell>
+              <block>${cell}</block>
+            </table-cell>
+         % endfor
+           </table-row>
+        % endfor
+      </table-body>
+    </table>
+
+The skeletons directory is set in the template directory path by default.
+
+Format and style with CSS
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Independent of the *higher level language* that the content of the document is
+written the style and formatting use *CSS*, to be more specific it can 
+parse the rules that cssutils_ support a very good subset of CSS2 and CSS3,
+for example support things like ``:nth-child(X)`` and ``@import url(XX)``.
+
+The properties that can be set are the same as in the specification of xsl-fo,
+check out the section of `About XSL-FO syntax`_ except that you can
+use classes as selectors, xsl-fo does not support the ``class`` attribute
+the the pypfop parser is going to look for ``class`` substitute with the
+specific style and then remove the ``class`` attribute.
+
+For example I could define the style for the previous table in three files.
+
+*simple_table.css*::
+
+    @import url("general.css");
+    @import url("colors.css");
+        
+    #main-table > table-header > table-row{
+        text-align: center;
+        font-weight: bold;
+    }
+    
+    #main-table > table-header table-cell{
+        padding: 2mm 0 0mm;
+    }
+
+
+*general.css*::
+
+    flow[flow-name="xsl-region-body"] {
+        font-size: 10pt;
+        font-family: Helvetica;
+    }
+
+*colors.css*::
+
+    #main-table> table-body > table-row > table-cell:first-child{
+        color: red;
+    }    
+    #main-table> table-body > table-row > table-cell:nth-child(2){
+        color: blue;
+    }
+    #main-table> table-body > table-row > table-cell:nth-child(3){
+        color: cyan;
+    }
+    #main-table> table-body > table-row > table-cell:last-child{
+        color: green;
+    }
+
+
+Generate the document
+^^^^^^^^^^^^^^^^^^^^^
+They are different ways to implement the ``Document`` class to your needs, 
+but for the sake of simplicity this is a way to generate the document::
+
+
+    from pypfop import Document
+    from pypfop.makotemplates import TemplateFactory
+
+    tfactory = TemplateFactory()
+    params = {'header': ['Project', 'Website', 'Language', 'Notes'],
+              'rows': [('pypfop', 'https://bitbucket.org/cyraxjoe/pypfop', 
+                        'Python', 'Abstraction on top of Apache FOP'),
+			('Apache FOP', 'https://xmlgraphics.apache.org/fop/', 
+                        'Java', '')] }
+    doc = Document(tfactory('simple-table.fo.mako'), 'simple_table.css')
+    print(doc.generate(params)) # generate returns the path of the generated file.
+
+
+Supported Document formats
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+In the previous example we didn't define the output of the `Document` in that case
+the default output of ``pdf`` is used, but the supported outputs are the same as
+in `Apache FOP output formats`_.
+
+From ``pypfop.__init__``::
+
+    VALID_OFORMATS = frozenset(('awt', 'pdf', 'mif', 'rtf',
+                                'tiff', 'png', 'pcl', 'ps', 'txt'))
+
+
+The output format can be set in ``Document.__init__`` or ``Document.generate`` ::
+
+    doc = Document(tfactory('simple-table.fo.mako'), 'simple_table.css',
+                   oformat='rtf')
+
+or ::
+
+   doc.generate(params, oformat='rtf')
+
+
+
 About XSL-FO syntax
 ^^^^^^^^^^^^^^^^^^^
 
-As you should notice already it is required to now how to format xsl-fo documents
-which in most part are very similar to the HTML counterparts, the best reference
-that I could find online is in the `XML Bible`_.
+As you should notice already it is required to know how to format xsl-fo documents
+which in most part are very similar to the HTML counterparts (except that anything needs 
+to be in ``block`` tags), the best reference that I could find online is in the `XML Bible`_.
 
 
 Why!
@@ -51,10 +267,13 @@ if you want to generate pdf files easily or at least at the moment.
 I was looking to have some kind of *template* to the very rigid format of
 the average invoice and billing order, so pypfop came to relieve that pain.
 
-.. [1] Actually you can set the command at another level, check the examples. 
+.. [1] Actually you can set the command at another level, check the ``Document`` class. 
 
 .. _`Apache FOP`: https://xmlgraphics.apache.org/fop/
 .. _XSL-FO: https://en.wikipedia.org/wiki/XSL_Formatting_Objects
 .. _zip: http://apache.webxcreen.org/xmlgraphics/fop/binaries/fop-1.1-bin.zip
 .. _tar: http://apache.webxcreen.org/xmlgraphics/fop/binaries/fop-1.1-bin.tar.gz
 .. _`XML Bible`:  http://www.ibiblio.org/xml/books/bible3/chapters/ch16.html
+.. _mako: http://www.makotemplates.org/
+.. _cssutils: http://pypi.python.org/pypi/cssutils
+.. _`Apache FOP output formats`: https://xmlgraphics.apache.org/fop/1.1/output.html

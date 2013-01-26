@@ -23,7 +23,7 @@ def _get_version(repodir):
     return version
 
 
-description = 'Preprocessor to the Apache FOP, focused in PDF generation.'
+description = 'Document preprocessor for Apache FOP.'
 version = _get_version(REPODIR)
 longdesc = _get_longdesc(REPODIR)
 license_ = _get_license(REPODIR)
