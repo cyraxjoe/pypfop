@@ -1,4 +1,5 @@
 import os
+import logging
 import inspect
 import itertools
 import tempfile
@@ -10,7 +11,6 @@ __version__ = '0.1'
 
 BASEDIR =  os.path.join(os.getcwd(), os.path.dirname(__file__))
 SKELDIR = os.path.join(BASEDIR, 'skeletons')
-PDF_VIEWER = 'evince'
 FOP_ENV_VAR = 'FOP_CMD'
 VALID_OFORMATS = frozenset(('awt', 'pdf', 'mif', 'rtf',
                             'tiff', 'png', 'pcl', 'ps', 'txt'))
@@ -38,10 +38,10 @@ class Document(object):
 
     def __init__(self, template=None, stylesheets=(), oformat='pdf',
                  instparams=None, styledir=None, fop_cmd=None,
-                 tempdir=None, debug=False, show=False):
+                 tempdir=None, debug=False):
         self.styledir = styledir or self.__style_dir__
         self.tempdir = tempdir or self.__tempdir__
-        self.show_doc = show
+        self._setup_logging()
         self.debug = debug
         self.template = self._check_template(template)
         self.oformat = self._check_oformat(oformat)
@@ -49,6 +49,7 @@ class Document(object):
         self.defparams = self._get_inst_params(instparams)
         self.ssheets = self._ssheets_with_abspath(stylesheets)
 
+        
 
     def _check_template(self, template):
         # I wonder if this method really needs to be that pedantinc...
@@ -96,6 +97,12 @@ class Document(object):
                     'Check the environment variable "%s"' % FOP_ENV_VAR)
 
 
+    def _setup_logging(self):
+        logging.basicConfig()
+        self.log = logging.getLogger('pypfop')
+        self.log.setLevel(level=logging.DEBUG)
+        
+
     def _ssheets_with_abspath(self, ssheets):
         if isinstance(ssheets, str): 
             ssheets = [ssheets,]
@@ -106,10 +113,11 @@ class Document(object):
     def _debug_msg(self, msg, label='DEBUG'):
         if self.debug:  # TODO: Improve this method.
             if isinstance(msg, str):
-                print('%s: %s' % (label, msg), file=os.sys.stderr)
+                self.log.debug('%s: %s' % (label, msg))
             else:
-                print('%s: %s' % (label, msg.decode()), file=os.sys.stderr)
+                self.log.debug('%s: %s' % (label, msg.decode()) )
 
+        
     def _get_inst_params(self, params):
         if isinstance(params, dict) and params:
             defparams = self.__defparams__.copy()
@@ -119,8 +127,9 @@ class Document(object):
             return self.__defparams__
 
 
-    def _generate_xslfo(self, params):
-        params = params.copy()
+    def _generate_xslfo(self, params, copy_params):
+        if copy_params:
+            params = params.copy()
         params.update(self.defparams)
         xml = self.template.render(params)
         self._debug_msg(xml, 'Generated XML')
@@ -135,7 +144,7 @@ class Document(object):
         return ofilepath
 
 
-    def generate(self, params, oformat=None):
+    def generate(self, params, oformat=None, copy_params=False):
         """Return the name of the generated document.
         
         Raise Exception in case of an error with the fop command and use
@@ -145,7 +154,7 @@ class Document(object):
             oformat = self.oformat
         else:
             oformat = self._check_oformat(oformat)
-        xslfo = self._generate_xslfo(params)
+        xslfo = self._generate_xslfo(params, copy_params)
         ofilepath = self._get_tempfile()
         cmdargs = [self.fop_cmd, '-q', '-fo', '-',  # - == stdin
                    '-%s' % oformat, ofilepath]
@@ -159,8 +168,6 @@ class Document(object):
                b'GRAVE: Exception' in stderr:
                 raise Exception(stderr.decode())
             else:
-                if self.show_doc and oformat == 'pdf':
-                    subp.call([PDF_VIEWER, ofilepath])
                 return ofilepath
 
 

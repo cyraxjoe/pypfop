@@ -1,3 +1,5 @@
+import sys
+
 from pypfop import Document
 from pypfop.makotemplates import TemplateFactory
 
@@ -39,5 +41,7 @@ def pdf_table(params):
 
 
 if __name__ == '__main__':
+    sys.stderr.write('The document has been generated at ')
+    sys.stderr.flush()
     print(pdf_table(SAMPLE_DATA))
     
