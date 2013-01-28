@@ -28,7 +28,7 @@ class Document(object):
     property which accept two arguments (properties, format) that
     will be translated by the renderer to a single string.
     """
-    __template__ = None
+   
     __style_sheets__ = ()
     __style_dir__ = '.'
     __defparams__ = {}

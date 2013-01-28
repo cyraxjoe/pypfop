@@ -40,7 +40,10 @@ class TemplateFactory(object):
         if lookup_dirs is None:
             lookup_dirs = ['.',]
         else:
-            lookup_dirs =  list(lookup_dirs)
+            if isinstance(lookup_dirs, str):
+                lookup_dirs = [lookup_dirs,]
+            else:
+                lookup_dirs =  list(lookup_dirs)
         if use_skels:
             lookup_dirs.append(self.__skel_dir__)
         return lookup_dirs
