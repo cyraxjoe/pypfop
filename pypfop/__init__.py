@@ -99,10 +99,15 @@ class Document(object):
 
 
     def _setup_logging(self):
-        logging.basicConfig()
-        self.log = logging.getLogger('pypfop')
-        self.log.setLevel(level=logging.DEBUG)
-        
+        """Overwrite this method in case that you want
+        a more "intelligent" logging handler.
+        """
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter())
+        log = logging.getLogger('pypfop')
+        log.setLevel(logging.DEBUG)
+        log.addHandler(handler)
+        self.log = log
 
     def _ssheets_with_abspath(self, ssheets):
         if isinstance(ssheets, str): 
@@ -111,7 +116,7 @@ class Document(object):
                 for sheet in itertools.chain(self.__style_sheets__, ssheets)]
             
 
-    def _debug_msg(self, msg, label='DEBUG'):
+    def _debug_msg(self, msg, label=''):
         if self.debug:  # TODO: Improve this method.
             if isinstance(msg, str):
                 self.log.debug('%s: %s' % (label, msg))

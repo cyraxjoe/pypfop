@@ -38,10 +38,10 @@ classifiers = ['Development Status :: 2 - Pre-Alpha',
                'Topic :: Office/Business',
                'Topic :: Software Development :: Libraries',
                'Topic :: Text Processing :: Filters']
-requires = ['Mako==0.7.3',
-            'cssutils==0.9.10b1',
-            'cssselect==0.7.1',
-            'lxml==3.0.1']
+requires = ['Mako',
+            'cssutils',
+            'cssselect',
+            'lxml']
 setup(name='pypfop',
       version=version,
       author='Joel Rivera',
