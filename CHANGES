@@ -1,0 +1,9 @@
+0.1.1
+ - Remove specify versions of the depencencies.
+ - Improve debug messages, configure the local logger
+   and not the root logger.
+ - Add support to in case that the lookup_dirs is
+   just one string create a list with one element.
+ - Remove duplicate __template__ parameter in Document class.
+
+
