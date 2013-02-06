@@ -7,7 +7,7 @@ import subprocess as subp
 
 from pypfop.conversion import xml_to_fo_with_style
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __version_info__ = __version__.split('.')
 
 BASEDIR =  os.path.join(os.getcwd(), os.path.dirname(__file__))
@@ -102,11 +102,12 @@ class Document(object):
         """Overwrite this method in case that you want
         a more "intelligent" logging handler.
         """
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter())
         log = logging.getLogger('pypfop')
-        log.setLevel(logging.DEBUG)
-        log.addHandler(handler)
+        if not log.hasHandlers():  # avoid the duplicate setup.
+            log.setLevel(logging.DEBUG)
+            handler = logging.StreamHandler()
+            handler.setFormatter(logging.Formatter())
+            log.addHandler(handler)
         self.log = log
 
     def _ssheets_with_abspath(self, ssheets):
