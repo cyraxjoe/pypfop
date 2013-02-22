@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 import inspect
 import itertools
@@ -7,7 +8,7 @@ import subprocess as subp
 
 from pypfop.conversion import xml_to_fo_with_style
 
-__version__ = '0.1.2'
+__version__ = '0.2.0'
 __version_info__ = __version__.split('.')
 
 BASEDIR =  os.path.join(os.getcwd(), os.path.dirname(__file__))
@@ -16,6 +17,10 @@ FOP_ENV_VAR = 'FOP_CMD'
 VALID_OFORMATS = frozenset(('awt', 'pdf', 'mif', 'rtf',
                             'tiff', 'png', 'pcl', 'ps', 'txt'))
 
+if sys.version_info.major < 3:
+    _BASE_STRING = basestring
+else:
+    _BASE_STRING = str
 
 def skeldir_for(tname):
     return os.path.join(SKELDIR, tname)
@@ -28,7 +33,6 @@ class Document(object):
     property which accept two arguments (properties, format) that
     will be translated by the renderer to a single string.
     """
-   
     __style_sheets__ = ()
     __style_dir__ = '.'
     __defparams__ = {}
@@ -49,7 +53,6 @@ class Document(object):
         self.fop_cmd = self._find_fop_cmd(fop_cmd)
         self.defparams = self._get_inst_params(instparams)
         self.ssheets = self._ssheets_with_abspath(stylesheets)
-
         
 
     def _check_template(self, template):
@@ -103,15 +106,18 @@ class Document(object):
         a more "intelligent" logging handler.
         """
         log = logging.getLogger('pypfop')
-        if not log.hasHandlers():  # avoid the duplicate setup.
+         # avoid the duplicate setup.
+         # in py3 I could use hasHandlers which it also check for the parents.
+        if not log.handlers:
             log.setLevel(logging.DEBUG)
             handler = logging.StreamHandler()
             handler.setFormatter(logging.Formatter())
             log.addHandler(handler)
         self.log = log
 
+
     def _ssheets_with_abspath(self, ssheets):
-        if isinstance(ssheets, str): 
+        if isinstance(ssheets, _BASE_STRING): 
             ssheets = [ssheets,]
         return [os.path.join(self.styledir, sheet)
                 for sheet in itertools.chain(self.__style_sheets__, ssheets)]
@@ -119,10 +125,10 @@ class Document(object):
 
     def _debug_msg(self, msg, label=''):
         if self.debug:  # TODO: Improve this method.
-            if isinstance(msg, str):
+            if isinstance(msg, _BASE_STRING):
                 self.log.debug('%s: %s' % (label, msg))
             else:
-                self.log.debug('%s: %s' % (label, msg.decode()) )
+                self.log.debug('%s: %s' % (label, msg.decode())) # bytes
 
         
     def _get_inst_params(self, params):
@@ -166,15 +172,14 @@ class Document(object):
         cmdargs = [self.fop_cmd, '-q', '-fo', '-',  # - == stdin
                    '-%s' % oformat, ofilepath]
         self._debug_msg('cmdline %s' % cmdargs)
-        with subp.Popen(cmdargs,
-                        stdin=subp.PIPE, stdout=subp.PIPE,
-                        stderr=subp.PIPE) as proc:
-            stdout, stderr = proc.communicate(xslfo)
-            self._debug_msg(stderr, 'STDERR of fop command')
-            if b'SEVERE: Exception' in stderr or \
-               b'GRAVE: Exception' in stderr:
-                raise Exception(stderr.decode())
-            else:
-                return ofilepath
+        proc =  subp.Popen(cmdargs, stdin=subp.PIPE, stdout=subp.PIPE,
+                           stderr=subp.PIPE) 
+        _, stderr = proc.communicate(xslfo)
+        stderr = stderr.decode()
+        self._debug_msg(stderr, 'STDERR of fop command')
+        if proc.returncode:  # != 0
+            raise Exception(stderr)
+        else:
+            return ofilepath
 
 

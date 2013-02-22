@@ -89,5 +89,5 @@ class FOBuilder(ElementTree.TreeBuilder):
 
     def end(self, tag):
         tag = foname(tag)
-        super().end(tag)
+        ElementTree.TreeBuilder.end(self, tag)
 

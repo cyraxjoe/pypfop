@@ -5,5 +5,7 @@
  - Add support to in case that the lookup_dirs is
    just one string create a list with one element.
  - Remove duplicate __template__ parameter in Document class.
+0.2
+ - Add support for python 2.
 
 
