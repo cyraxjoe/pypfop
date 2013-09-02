@@ -9,7 +9,7 @@ How does it works?
 ------------------
 It does what the huge title is implying, preprocess a *higher* level template
 to generate *dynamically* an specific `XSL-FO`_ document, which then gets 
-fed to `Apache FOP`_ to generate the expected output. So that means that
+fed to `Apache FOP`_ and generate the expected output. So that means that
 this packages *requires Java*  ``>_<'``, but fear not!, it is almost transparent 
 to the python application.
 
@@ -35,10 +35,10 @@ Installation
 Usage
 -----
 
-The language
-^^^^^^^^^^^^^
+The Markup
+^^^^^^^^^^
 
-The language to generate the documents is almost the same as the xsl-fo, the only
+The markup used to generate the documents is almost the same as the xsl-fo, the only
 difference is that is not necessary to set the xml namespace to all the elements,
 for example::
 
@@ -158,15 +158,15 @@ The skeletons directory is set in the template directory path by default.
 
 Format and style with CSS
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Independent of the *higher level language* that the content of the document is
-written the style and formatting use *CSS*, to be more specific it can 
-parse the rules that cssutils_ support a very good subset of CSS2 and CSS3,
-for example support things like ``:nth-child(X)`` and ``@import url(XX)``.
+Beside the *higher level language* that define the content and layout of the document,
+the style and formatting use *CSS*, to be more specific it can  parse the rules that
+cssutils_ support, which are a very good subset of CSS2 and CSS3, for example it support
+things like ``:nth-child(X)`` and ``@import url(XX)``.
 
 The properties that can be set are the same as in the specification of xsl-fo,
-check out the section of `About XSL-FO syntax`_ except that you can
-use classes as selectors, xsl-fo does not support the ``class`` attribute
-the the pypfop parser is going to look for ``class`` substitute with the
+check out the section of `About XSL-FO syntax`_, with the only exception that you can
+use classes as selectors, xsl-fo does not support the ``class`` attribute,
+the pypfop parser is going to look for the ``class`` attribute then substitute with the
 specific style and then remove the ``class`` attribute.
 
 For example I could define the style for the previous table in three files.
@@ -211,7 +211,7 @@ For example I could define the style for the previous table in three files.
 
 Generate the document
 ^^^^^^^^^^^^^^^^^^^^^
-They are different ways to implement the ``Document`` class to your needs, 
+There are a few different ways to implement the ``Document`` class, 
 but for the sake of simplicity this is a way to generate the document::
 
 
@@ -225,7 +225,7 @@ but for the sake of simplicity this is a way to generate the document::
 			('Apache FOP', 'https://xmlgraphics.apache.org/fop/', 
                         'Java', '')] }
     doc = Document(tfactory('simple-table.fo.mako'), 'simple_table.css')
-    print(doc.generate(params)) # generate returns the path of the generated file.
+    print(doc.generate(params)) # returns the path of the generated file.
 
 
 Supported Document formats
