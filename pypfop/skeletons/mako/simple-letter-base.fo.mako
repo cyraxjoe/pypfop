@@ -1,13 +1,10 @@
 <root>
   <layout-master-set>
-    <simple-page-master  master-name="letter"
-       page-width="8.5in" page-height="11in"
-			 >
+    <simple-page-master  master-name="letter" page-width="8.5in" page-height="11in">
       <region-body margin="0.5in"/>
       <region-after  extent="4.8cm"/>
     </simple-page-master>
   </layout-master-set>
-
   <declarations>
     <x:xmpmeta xmlns:x="adobe:ns:meta/">
       <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
@@ -24,15 +21,12 @@
       </rdf:RDF>
     </x:xmpmeta>
   </declarations>
-
   <page-sequence master-reference="letter">
-
     <static-content flow-name="xsl-region-after">
       <%block name="rfooter">
          <block />
       </%block>
-     </static-content>    
-    
+     </static-content>
 % if FONT_SIZE and FONT_FAMILY:
     <flow flow-name="xsl-region-body" font-size="${FONT_SIZE}" font-family="${FONT_FAMILY}">
 % elif FONT_SIZE:
@@ -46,6 +40,3 @@
     </flow>
   </page-sequence>
 </root>
-
-
-

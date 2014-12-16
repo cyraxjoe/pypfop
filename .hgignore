@@ -4,3 +4,8 @@ syntax: glob
 *~
 *orig
 \#*
+syntax: regexp
+^build/
+^dist/
+^pypfop\.egg-info/
+

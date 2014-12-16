@@ -17,8 +17,7 @@ class Template(object):
         self.template_path = template_path
         self.lookup = lookup
 
-
-    def render(self,  params):
+    def render(self, params):
         template = self.lookup.get_template(self.template_path)
         try:
             return template.render(**params)
@@ -28,7 +27,7 @@ class Template(object):
 
 class TemplateFactory(object):
     __skel_dir__ = pypfop.skeldir_for('mako')
-    
+
     def __init__(self, lookup_dirs=None, use_skels=True):
         lookup_dirs = self._get_lookup_dirs(lookup_dirs, use_skels)
         self.lookup = get_lookup(lookup_dirs)
@@ -43,7 +42,7 @@ class TemplateFactory(object):
             if isinstance(lookup_dirs, str):
                 lookup_dirs = [lookup_dirs,]
             else:
-                lookup_dirs =  list(lookup_dirs)
+                lookup_dirs = list(lookup_dirs)
         if use_skels:
             lookup_dirs.append(self.__skel_dir__)
         return lookup_dirs
