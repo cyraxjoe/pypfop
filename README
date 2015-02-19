@@ -8,9 +8,9 @@ Document preprocessor for `Apache FOP`_.
 How does it works?
 ------------------
 It does what the huge title is implying, preprocess a *higher* level template
-to generate *dynamically* an specific `XSL-FO`_ document, which then gets 
+to generate *dynamically* an specific `XSL-FO`_ document, which then gets
 fed to `Apache FOP`_ and generate the expected output. So that means that
-this packages *requires Java*  ``>_<'``, but fear not!, it is almost transparent 
+this packages *requires Java*  ``>_<'``, but fear not!, it is almost transparent
 to the python application.
 
 In general the internal workflow is::
@@ -29,7 +29,7 @@ Installation
 
    #. Download the binary package of fop1.1 either the  zip_ or tar_ package.
    #. Decompress in wherever place you like and set environment variable ``FOP_CMD``
-      to the ``bin/fop`` of the decompressed folder. [1]_
+      to the executable file ``fop`` of the decompressed folder. [1]_
 
 
 Usage
@@ -60,7 +60,7 @@ for example::
    </fo:table>
 
 can be written like this::
-  
+
    <table>
     <table-header>
        <table-row>
@@ -102,7 +102,7 @@ For example the previous table can be generated with this mako template assuming
       <table-body>
         % for row in rows:
            <table-row>
-         % for cell in row:  
+         % for cell in row:
             <table-cell>
               <block>${cell}</block>
             </table-cell>
@@ -117,10 +117,10 @@ Skeletons
 ^^^^^^^^^
 The previous examples are really just a fragment a document to be able to generate
 a full document with metadata, paper size, margins, etc. To avoid the repetitive
-work to write this kind of base document pypfop come with skeletons documents, the
+work to write this kind of base document pypfop have the notion of skeleton documents, the
 purpose if this documents is to be inherited at each template, at the time
 the only implemented skeleton is in `pypfop/skeletons/mako/simple-letter-base.fo.mako`,
-which include place holders for metadata about the document and two regions, body
+which include place-holders for metadata about the document and two regions, body
 and footer, with a few defaults, which of course can be overwritten with the
 appropriate parameters.
 
@@ -143,7 +143,7 @@ To be a fully functional template for pypfop the previous table need to be like 
       <table-body>
         % for row in rows:
            <table-row>
-         % for cell in row:  
+         % for cell in row:
             <table-cell>
               <block>${cell}</block>
             </table-cell>
@@ -153,13 +153,13 @@ To be a fully functional template for pypfop the previous table need to be like 
       </table-body>
     </table>
 
-The skeletons directory is set in the template directory path by default.
+*The skeletons directory is set in the template directory path by default.*
 
 
 Format and style with CSS
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Beside the *higher level language* that define the content and layout of the document,
-the style and formatting use *CSS*, to be more specific it can  parse the rules that
+the style and formatting uses *CSS*, to be more specific it can parse the rules that
 cssutils_ support, which are a very good subset of CSS2 and CSS3, for example it support
 things like ``:nth-child(X)`` and ``@import url(XX)``.
 
@@ -175,12 +175,12 @@ For example I could define the style for the previous table in three files.
 
     @import url("general.css");
     @import url("colors.css");
-        
+
     #main-table > table-header > table-row{
         text-align: center;
         font-weight: bold;
     }
-    
+
     #main-table > table-header table-cell{
         padding: 2mm 0 0mm;
     }
@@ -197,7 +197,7 @@ For example I could define the style for the previous table in three files.
 
     #main-table> table-body > table-row > table-cell:first-child{
         color: red;
-    }    
+    }
     #main-table> table-body > table-row > table-cell:nth-child(2){
         color: blue;
     }
@@ -211,7 +211,7 @@ For example I could define the style for the previous table in three files.
 
 Generate the document
 ^^^^^^^^^^^^^^^^^^^^^
-There are a few different ways to implement the ``Document`` class, 
+There are a few different ways to implement the ``Document`` class,
 but for the sake of simplicity this is a way to generate the document::
 
 
@@ -220,9 +220,9 @@ but for the sake of simplicity this is a way to generate the document::
 
     tfactory = TemplateFactory()
     params = {'header': ['Project', 'Website', 'Language', 'Notes'],
-              'rows': [('pypfop', 'https://bitbucket.org/cyraxjoe/pypfop', 
+              'rows': [('pypfop', 'https://bitbucket.org/cyraxjoe/pypfop',
                         'Python', 'Abstraction on top of Apache FOP'),
-			('Apache FOP', 'https://xmlgraphics.apache.org/fop/', 
+			('Apache FOP', 'https://xmlgraphics.apache.org/fop/',
                         'Java', '')] }
     doc = Document(tfactory('simple-table.fo.mako'), 'simple_table.css')
     print(doc.generate(params)) # returns the path of the generated file.
@@ -254,20 +254,20 @@ About XSL-FO syntax
 ^^^^^^^^^^^^^^^^^^^
 
 As you should notice already it is required to know how to format xsl-fo documents
-which in most part are very similar to the HTML counterparts (except that anything needs 
+which in most part are very similar to the HTML counterparts (except that anything needs
 to be in ``block`` tags), the best reference that I could find online is in the `XML Bible`_.
 
 
 Why!
 ----
 
-This project it use to be part of a larger project of one of my customers, 
-which I decide early on that I will use *only python 3*, terrible decision 
+This project it use to be part of a larger project of one of my clients,
+on which I decide early on that I will *only use python 3*, terrible decision
 if you want to generate pdf files easily or at least at the moment.
 I was looking to have some kind of *template* to the very rigid format of
 the average invoice and billing order, so pypfop came to relieve that pain.
 
-.. [1] Actually you can set the command at another level, check the ``Document`` class. 
+.. [1] Actually you can set the command at another level, check the ``Document`` class.
 
 .. _`Apache FOP`: https://xmlgraphics.apache.org/fop/
 .. _XSL-FO: https://en.wikipedia.org/wiki/XSL_Formatting_Objects

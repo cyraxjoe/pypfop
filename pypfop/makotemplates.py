@@ -2,6 +2,7 @@ import mako.exceptions
 from mako.lookup import TemplateLookup
 
 import pypfop
+import pypfop.exceptions
 
 
 def get_lookup(lookup_dirs, input_enc='utf-8', output_enc='utf-8'):
@@ -22,11 +23,12 @@ class Template(object):
         try:
             return template.render(**params)
         except Exception:
-            raise Exception(mako.exceptions.text_error_template().render())
+            raise pypfop.exceptions.TemplateError(
+                mako.exceptions.text_error_template().render())
 
 
 class TemplateFactory(object):
-    __skel_dir__ = pypfop.skeldir_for('mako')
+    __skel_dir__ = pypfop.skeleton_dir('mako')
 
     def __init__(self, lookup_dirs=None, use_skels=True):
         lookup_dirs = self._get_lookup_dirs(lookup_dirs, use_skels)
