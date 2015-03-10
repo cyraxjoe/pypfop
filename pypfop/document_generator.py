@@ -11,13 +11,12 @@ from pypfop.builder import SubprocessBuilder, FopsBuilder
 from pypfop.exceptions import DocumentGeneratorError
 
 
-VALID_OFORMATS = ('pdf', 'rtf', 'tiff', 'png', 'pcl', 'ps', 'txt')
+OUTPUT_FORMATS = ('pdf', 'rtf', 'tiff', 'png', 'pcl', 'ps', 'txt')
 _LOG = logging.getLogger('pypfop')
 
 
 class DocumentGenerator(object):
-    """
-    The primary way to generate a new document.
+    """The primary way to generate a new document.
 
     You can define (and encouraged) to define the following properties:
 
@@ -57,25 +56,23 @@ class DocumentGenerator(object):
     log = None
     builder = None
 
-    def __init__(self, template=None, stylesheets=(), oformat='pdf', instparams=None,
-                 styledir=None, fop_cmd=None, tempdir=None, debug=None,
+    def __init__(self, template=None, stylesheets=(), out_format='pdf',
+                 instparams=None, styledir=None, fop_cmd=None,
+                 tempdir=None, debug=None,
                  builder=None, log_level=logging.DEBUG):
         self._setup_log(debug, log_level)
         self.styledir = styledir or self.__style_dir__
         self.template = self._check_template(template)
-        self.oformat = self._check_oformat(oformat)
+        self.out_format = self._check_out_format(out_format)
         self.defparams = self._get_instparams(instparams)
         self.ssheets = self._ssheets_with_abspath(stylesheets)
         _tempdir = tempdir or self.__tempdir__ # legacy tempdir
         self._setup_builder(fop_cmd, builder, _tempdir)
 
-
     @classmethod
     def from_fops(cls, host='localhost', port=3000, *args, **kwargs):
-        """
-        Set the builder argument to use the FopsBuilder and generate the
-        document on the fops server listening on
-        ``host`` and ``port``.
+        """Set the builder argument to use the FopsBuilder and generate the
+        document on the fops server listening on ``host`` and ``port``.
         """
         kwargs['builder'] = FopsBuilder(host, port)
         return cls(*args, **kwargs)
@@ -128,12 +125,12 @@ class DocumentGenerator(object):
                     'The template object {} does not implement '
                     'a callable "render" property (method)'.format(template))
 
-    def _check_oformat(self, oformat):
-        oformat = oformat.lower()
-        if oformat in VALID_OFORMATS:
-            return oformat
+    def _check_out_format(self, out_format):
+        out_format = out_format.lower()
+        if out_format in OUTPUT_FORMATS:
+            return out_format
         else:
-            raise DocumentGeneratorError('Invalid output format {}'.format(oformat))
+            raise DocumentGeneratorError('Invalid output format {}'.format(out_format))
 
     def _ssheets_with_abspath(self, ssheets):
         if isinstance(ssheets, compat.BASE_STRING):
@@ -159,14 +156,13 @@ class DocumentGenerator(object):
         compat.debug_msg(self.log, xslfo, 'Generated XSL-FO from xml_to_fo')
         return xslfo
 
-
-    def generate(self, params, oformat=None, copy_params=False):
+    def generate(self, params, out_format=None, copy_params=False):
         """Generate the document and return the name of the generated
         document (file).
         """
-        if oformat is None:
-            oformat = self.oformat
+        if out_format is None:
+            out_format = self.out_format
         else:
-            oformat = self._check_oformat(oformat)
+            out_format = self._check_out_format(out_format)
         xslfo = self._generate_xslfo(params, copy_params)
-        return self.builder(xslfo, oformat, self.log)
+        return self.builder(xslfo, out_format, self.log)

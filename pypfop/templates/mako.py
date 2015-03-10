@@ -1,18 +1,19 @@
 import mako.exceptions
-from mako.lookup import TemplateLookup
+import mako.lookup
 
 import pypfop
+import pypfop.templates
 import pypfop.exceptions
 
 
 def get_lookup(lookup_dirs, input_enc='utf-8', output_enc='utf-8'):
     if isinstance(lookup_dirs, str):
         lookup_dirs = (lookup_dirs,)
-    return TemplateLookup(directories=lookup_dirs,
-                          input_encoding=input_enc,
-                          output_encoding=output_enc)
+    return mako.lookup.TemplateLookup(directories=lookup_dirs,
+                                      input_encoding=input_enc,
+                                      output_encoding=output_enc)
 
-class Template(object):
+class Template(pypfop.templates.Template):
 
     def __init__(self, template_path, lookup):
         self.template_path = template_path
@@ -27,8 +28,8 @@ class Template(object):
                 mako.exceptions.text_error_template().render())
 
 
-class TemplateFactory(object):
-    __skel_dir__ = pypfop.skeleton_dir('mako')
+class Factory(pypfop.templates.Factory):
+    name = 'mako'
 
     def __init__(self, lookup_dirs=None, use_skels=True):
         lookup_dirs = self._get_lookup_dirs(lookup_dirs, use_skels)
@@ -46,5 +47,5 @@ class TemplateFactory(object):
             else:
                 lookup_dirs = list(lookup_dirs)
         if use_skels:
-            lookup_dirs.append(self.__skel_dir__)
+            lookup_dirs.append(self.skel_dir)
         return lookup_dirs

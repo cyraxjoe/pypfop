@@ -1,11 +1,11 @@
 import sys
 
-from pypfop import Document
-from pypfop.makotemplates import TemplateFactory
+import pypfop
+import pypfop.templates.mako
 
-tfactory = TemplateFactory()
-doc = Document(tfactory('helloworld.fo.mako'))
+tfactory = pypfop.templates.mako.Factory()
+doc = pypfop.DocumentGenerator(tfactory('helloworld.fo.mako'))
 fpath = doc.generate({"name": "Stranger"})
 sys.stderr.write('The document has been generated at ')
 sys.stderr.flush()
-print("%s" % fpath)
+print(fpath)

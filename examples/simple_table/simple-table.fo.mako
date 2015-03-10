@@ -1,4 +1,4 @@
-<%inherit file="simple-letter-base.fo.mako" />
+<%inherit file="letter-portrait.fo.mako" />
 
 <table id="main-table">
   <table-header>
@@ -13,7 +13,7 @@
   <table-body>
     % for row in rows:
        <table-row>
-     % for cell in row:	 
+     % for cell in row:
         <table-cell>
 	  <block>${cell}</block>
 	</table-cell>

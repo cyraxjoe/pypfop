@@ -7,6 +7,7 @@ Document preprocessor for `Apache FOP`_.
 
 How does it works?
 ------------------
+
 It does what the huge title is implying, preprocess a *higher* level template
 to generate *dynamically* an specific `XSL-FO`_ document, which then gets
 fed to `Apache FOP`_ and generate the expected output. So that means that
@@ -28,9 +29,8 @@ Installation
 2. Install `Apache FOP`_:
 
    #. Download the binary package of fop1.1 either the  zip_ or tar_ package.
-   #. Decompress in wherever place you like and set environment variable ``FOP_CMD``
-      to the executable file ``fop`` of the decompressed folder. [1]_
-
+   #. Decompress in wherever place you like and set environment variable
+      ``FOP_CMD`` to the executable file ``fop`` of the decompressed folder. [1]_
 
 Usage
 -----
@@ -38,9 +38,9 @@ Usage
 The Markup
 ^^^^^^^^^^
 
-The markup used to generate the documents is almost the same as the xsl-fo, the only
-difference is that is not necessary to set the xml namespace to all the elements,
-for example::
+The markup used to generate the documents is almost the same as the xsl-fo,
+the only difference is that is not necessary to set the xml namespace to all
+the elements, for example::
 
    <fo:table>
     <fo:table-header>
@@ -81,13 +81,15 @@ can be written like this::
 
 The higher level template language
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 At the time the only supported template language is mako_ it should not be very
-complicated to extend to your favorite template language based in the implementation
-of mako (which is pretty straight forward) and hopefully contribute back to the project :).
+complicated to extend to your favorite template language based in the
+implementation of mako (which is pretty straight forward) and hopefully
+contribute back to the project :).
 
-For example the previous table can be generated with this mako template assuming the
-`header` and `rows` variables are passed to the `Document.generate` method::
-
+For example the previous table can be generated with this mako template
+assuming the `header` and `rows` variables are passed to the
+`DocumentGenerator.generate` method::
 
     <table>
       <table-header>
@@ -115,12 +117,14 @@ For example the previous table can be generated with this mako template assuming
 
 Skeletons
 ^^^^^^^^^
+
 The previous examples are really just a fragment a document to be able to generate
 a full document with metadata, paper size, margins, etc. To avoid the repetitive
 work to write this kind of base document pypfop have the notion of skeleton documents, the
 purpose if this documents is to be inherited at each template, at the time
-the only implemented skeleton is in `pypfop/skeletons/mako/simple-letter-base.fo.mako`,
-which include place-holders for metadata about the document and two regions, body
+the only implemented skeleton is in
+``pypfop/skeletons/mako/letter-portrait-base.fo.mako``, which include
+place-holders for metadata about the document and two regions, body
 and footer, with a few defaults, which of course can be overwritten with the
 appropriate parameters.
 
@@ -158,16 +162,19 @@ To be a fully functional template for pypfop the previous table need to be like 
 
 Format and style with CSS
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Beside the *higher level language* that define the content and layout of the document,
-the style and formatting uses *CSS*, to be more specific it can parse the rules that
-cssutils_ support, which are a very good subset of CSS2 and CSS3, for example it support
-things like ``:nth-child(X)`` and ``@import url(XX)``.
+
+Beside the *higher level language* that define the content and layout of
+the document, the style and formatting uses *CSS*, to be more specific it
+can parse the rules that cssutils_ support, which are a very good subset
+of CSS2 and CSS3, for example it support things like ``:nth-child(X)``
+and ``@import url(XX)``.
 
 The properties that can be set are the same as in the specification of xsl-fo,
-check out the section of `About XSL-FO syntax`_, with the only exception that you can
-use classes as selectors, xsl-fo does not support the ``class`` attribute,
-the pypfop parser is going to look for the ``class`` attribute then substitute with the
-specific style and then remove the ``class`` attribute.
+check out the section of `About XSL-FO syntax`_, with the only exception
+that you can use classes as selectors, xsl-fo does not support the
+``class`` attribute, the pypfop parser is going to look for the
+``class`` attribute then substitute with the specific style and then remove
+the ``class`` attribute.
 
 For example I could define the style for the previous table in three files.
 
@@ -211,39 +218,49 @@ For example I could define the style for the previous table in three files.
 
 Generate the document
 ^^^^^^^^^^^^^^^^^^^^^
+
 There are a few different ways to implement the ``Document`` class,
 but for the sake of simplicity this is a way to generate the document::
 
 
-    from pypfop import Document
-    from pypfop.makotemplates import TemplateFactory
+  import pypfop
+  import pypfop.templates.mako
 
-    tfactory = TemplateFactory()
-    params = {'header': ['Project', 'Website', 'Language', 'Notes'],
-              'rows': [('pypfop', 'https://bitbucket.org/cyraxjoe/pypfop',
-                        'Python', 'Abstraction on top of Apache FOP'),
-			('Apache FOP', 'https://xmlgraphics.apache.org/fop/',
-                        'Java', '')] }
-    doc = Document(tfactory('simple-table.fo.mako'), 'simple_table.css')
-    print(doc.generate(params)) # returns the path of the generated file.
+  tfactory = pypfop.templates.mako.Factory()
+  params = {
+    'header': ['Project', 'Website', 'Language', 'Notes'],
+    'rows': [
+      ('pypfop', 'https://bitbucket.org/cyraxjoe/pypfop', 'Python', 'Abstraction on top of Apache FOP'),
+      ('Apache FOP', 'https://xmlgraphics.apache.org/fop/', 'Java', '')
+    ]
+  }
+  doc = pypfop.DocumentGenerator(tfactory('simple-table.fo.mako'),
+                                 'simple_table.css')
+  print(doc.generate(params)) # returns the path of the generated file.
 
 
 Supported Document formats
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-In the previous example we didn't define the output of the `Document` in that case
-the default output of ``pdf`` is used, but the supported outputs are the same as
-in `Apache FOP output formats`_.
 
-From ``pypfop.__init__``::
+In the previous example we didn't define the output of the ``Document`` in
+that case the default output of ``pdf`` is used, but the supported outputs
+are the almost the same as in `Apache FOP output formats`_.
 
-    VALID_OFORMATS = frozenset(('awt', 'pdf', 'mif', 'rtf',
-                                'tiff', 'png', 'pcl', 'ps', 'txt'))
+ - pdf
+ - rtf
+ - tiff
+ - png
+ - pcl
+ - ps
+ - txt
 
 
-The output format can be set in ``Document.__init__`` or ``Document.generate`` ::
+The output format can be set in ``DocumentGenerator.__init__`` or
+``DocumentGenerator.generate`` ::
 
-    doc = Document(tfactory('simple-table.fo.mako'), 'simple_table.css',
-                   oformat='rtf')
+    doc = pypfop.DocumentGenerator(tfactory('simple-table.fo.mako'),
+                                   'simple_table.css',
+                                   oformat='rtf')
 
 or ::
 
@@ -253,10 +270,10 @@ or ::
 About XSL-FO syntax
 ^^^^^^^^^^^^^^^^^^^
 
-As you should notice already it is required to know how to format xsl-fo documents
-which in most part are very similar to the HTML counterparts (except that anything needs
-to be in ``block`` tags), the best reference that I could find online is in the `XML Bible`_.
-
+As you should notice already, it is required to know how to format xsl-fo
+documents which in most part are very similar to the HTML counterparts
+(except that anything needs to be in ``block`` tags), the best reference
+that I could find online is in the `XML Bible`_.
 
 Why!
 ----
@@ -267,7 +284,7 @@ if you want to generate pdf files easily or at least at the moment.
 I was looking to have some kind of *template* to the very rigid format of
 the average invoice and billing order, so pypfop came to relieve that pain.
 
-.. [1] Actually you can set the command at another level, check the ``Document`` class.
+.. [1] Actually you can set the command at another level, check the ``DocumentGenerator`` class.
 
 .. _`Apache FOP`: https://xmlgraphics.apache.org/fop/
 .. _XSL-FO: https://en.wikipedia.org/wiki/XSL_Formatting_Objects

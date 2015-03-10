@@ -4,11 +4,11 @@ from setuptools import setup
 REPODIR = os.path.dirname(os.path.realpath(__file__))
 
 def _get_longdesc(repodir):
-    return open(os.path.join(repodir, 'README')).read()
+    return open(os.path.join(repodir, 'README.txt')).read()
 
 
 def _get_license(repodir):
-    return open(os.path.join(repodir, 'LICENSE')).read()
+    return open(os.path.join(repodir, 'LICENSE.txt')).read()
 
 
 def _get_version(repodir):
@@ -27,7 +27,7 @@ description = 'Document preprocessor for Apache FOP.'
 version = _get_version(REPODIR)
 longdesc = _get_longdesc(REPODIR)
 license_ = _get_license(REPODIR)
-classifiers = ['Development Status :: 2 - Pre-Alpha',
+classifiers = ['Development Status :: 3 - Alpha',
                'Intended Audience :: Developers',
                'License :: OSI Approved :: Apache Software License',
                'Operating System :: OS Independent',
@@ -50,7 +50,8 @@ setup(name='pypfop',
       url='https://bitbucket.org/cyraxjoe/pypfop',
       license=license_,
       provides=['pypfop',],
-      packages=['pypfop',],
+      packages=['pypfop',
+                'pypfop.templates'],
       classifiers=classifiers,
       install_requires=requires,
       include_package_data=True,
