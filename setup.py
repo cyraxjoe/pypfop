@@ -4,7 +4,7 @@ from setuptools import setup
 REPODIR = os.path.dirname(os.path.realpath(__file__))
 
 def _get_longdesc(repodir):
-    return open(os.path.join(repodir, 'README.txt')).read()
+    return open(os.path.join(repodir, 'README.rst')).read()
 
 
 def _get_license(repodir):
