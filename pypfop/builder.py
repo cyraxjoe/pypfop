@@ -3,17 +3,18 @@ import sys
 import subprocess
 import tempfile
 
-if sys.version_info.major < 3:
-    import httplib
-    import urllib2 as urllib2
-    from urllib import urlencode, urljoin
-else:
+from pypfop import compat
+from pypfop.exceptions import BuilderError
+
+if compat.PY3:
     import http.client as httplib
     import urllib.request as urllib2
     from urllib.parse import urlencode, urljoin
-
-from pypfop import compat
-from pypfop.exceptions import BuilderError
+else:
+    import httplib
+    import urllib2 as urllib2
+    from urllib import urlencode
+    from urlparse import urljoin
 
 FOP_ENV_VAR = 'FOP_CMD'
 

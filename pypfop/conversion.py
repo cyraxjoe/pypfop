@@ -17,8 +17,7 @@ def _translate_stylesheet(stylesheet, translator):
             selector = rule.selectorText
             xsel = translator.css_to_xpath(selector)
             yield (xsel, {prop.name: prop.value
-                          for prop in \
-                          rule.style.getProperties()})
+                          for prop in rule.style.getProperties()})
 
 
 def _apply_css_sheets(xmlstring, *sheets):

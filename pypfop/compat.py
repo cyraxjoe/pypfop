@@ -1,9 +1,12 @@
 import sys
 
-if sys.version_info.major < 3:
-    BASE_STRING = basestring
-else:
+PY3 = sys.version_info[0] == 3
+
+if PY3:
     BASE_STRING = str
+else:
+    BASE_STRING = basestring
+
 
 def debug_msg(log, msg, label=''):
     if isinstance(msg, BASE_STRING):

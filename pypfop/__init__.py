@@ -1,4 +1,5 @@
 import os
+import sys
 
 import pypfop._logging_setup
 from pypfop.document_generator import DocumentGenerator
