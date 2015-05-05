@@ -92,7 +92,7 @@ class DocumentGenerator(object):
             self.builder.tempdir = tempdir
 
     def _setup_log(self, debug, log_level):
-        self.log = _LOG.getChild('Document.{}'.format(id(self)))
+        self.log = _LOG.getChild('{}.{}'.format(self.__class__.__name__, id(self)))
         self.log.propagate = True
         if debug is not None:
             warnings.warn(

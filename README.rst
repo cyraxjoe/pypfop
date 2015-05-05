@@ -11,7 +11,7 @@ How does it works?
 It does what the huge title is implying, preprocess a *higher* level template
 to generate *dynamically* an specific `XSL-FO`_ document, which then gets
 fed to `Apache FOP`_ and generate the expected output. So that means that
-this packages *requires Java*  ``>_<'``, but fear not!, it is almost transparent
+this packages *requires Java*  ``>_<'``, but fear not! It is almost transparent
 to the python application.
 
 In general the internal workflow is::
@@ -29,8 +29,8 @@ Installation
 2. Install `Apache FOP`_:
 
    #. Download the binary package of fop1.1 either the  zip_ or tar_ package.
-   #. Decompress in wherever place you like and set environment variable
-      ``FOP_CMD`` to the executable file ``fop`` of the decompressed folder. [1]_
+   #. Decompress anywhere you like and set the environment variable ``FOP_CMD``
+      to the executable file ``fop`` on the decompressed folder. [1]_
 
 Usage
 -----
@@ -87,7 +87,7 @@ complicated to extend to your favorite template language based in the
 implementation of mako (which is pretty straight forward) and hopefully
 contribute back to the project :).
 
-For example the previous table can be generated with this mako template
+For example, the previous table can be generated with this mako template
 assuming the `header` and `rows` variables are passed to the
 `DocumentGenerator.generate` method::
 
@@ -118,15 +118,32 @@ assuming the `header` and `rows` variables are passed to the
 Skeletons
 ^^^^^^^^^
 
-The previous examples are really just a fragment a document to be able to generate
-a full document with metadata, paper size, margins, etc. To avoid the repetitive
-work to write this kind of base document pypfop have the notion of skeleton documents, the
-purpose if this documents is to be inherited at each template, at the time
-the only implemented skeleton is in
-``pypfop/skeletons/mako/letter-portrait-base.fo.mako``, which include
-place-holders for metadata about the document and two regions, body
-and footer, with a few defaults, which of course can be overwritten with the
-appropriate parameters.
+The previous examples are just fragments of a document. To be able to fully
+generate a document with metadata, paper size, margins, etc and to avoid the
+repetitive work to write this kind of *base document* pypfop have the notion of
+*skeleton documents*, the purpose if this documents are to be inherited at each
+template, at the time the implemented skeleton are:
+
+ - ``pypfop/skeletons/mako/A4-landscape.fo.mako``
+ - ``pypfop/skeletons/mako/A4-portrait.fo.mako``
+ - ``pypfop/skeletons/mako/letter-landscape.fo.mako``
+ - ``pypfop/skeletons/mako/letter-portrait.fo.mako``
+
+
+those include place-holders for:
+
+Metadata:
+
+ - title
+ - author
+ - subject
+ - GENERATOR (by default "PyPFOP")
+
+There is also a  mako block called ``rfooter`` and the body of your template will
+be the body of the document.
+
+You don't have to define anything else than the body of your own document but you
+still have the option to override any of the metadata and your own footer region.
 
 To be a fully functional template for pypfop the previous table need to be like this.
 
@@ -230,7 +247,7 @@ but for the sake of simplicity this is a way to generate the document::
   params = {
     'header': ['Project', 'Website', 'Language', 'Notes'],
     'rows': [
-      ('pypfop', 'https://bitbucket.org/cyraxjoe/pypfop', 'Python', 'Abstraction on top of Apache FOP'),
+      ('pypfop', 'https://github.com/cyraxjoe/pypfop', 'Python', 'Abstraction on top of Apache FOP'),
       ('Apache FOP', 'https://xmlgraphics.apache.org/fop/', 'Java', '')
     ]
   }
@@ -270,19 +287,28 @@ or ::
 About XSL-FO syntax
 ^^^^^^^^^^^^^^^^^^^
 
-As you should notice already, it is required to know how to format xsl-fo
+As you may have already noticed, it is required to know how to format xsl-fo
 documents which in most part are very similar to the HTML counterparts
-(except that anything needs to be in ``block`` tags), the best reference
-that I could find online is in the `XML Bible`_.
+(except that anything needs to be in ``block`` tags), two of the best reference
+that I could find online is in the `XML Bible`_ and the `Data 2 Type tutorial`_.
+
+How about a CSS pre-processor and base generic styles?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I'm looking to add support for less_ or something similar and try to generalize
+the styling of fonts, colors, tables, etc. Very much in the *boostrap* sense
+of the things. If you are interested in something similar we can join forces
+and build something nice.
 
 Why!
 ----
 
-This project it use to be part of a larger project of one of my clients,
+The project used to be part of a larger project of one of my clients,
 on which I decide early on that I will *only use python 3*, terrible decision
-if you want to generate pdf files easily or at least at the moment.
-I was looking to have some kind of *template* to the very rigid format of
-the average invoice and billing order, so pypfop came to relieve that pain.
+if you want to generate pdf files easily or at least at the moment when the
+`Report Lab PDF Toolkit`_ was not yet available for Python 3 and I was looking
+to have some kind of *template* to the very rigid format of the average invoice
+and billing order, so pypfop came to relieve that pain.
 
 .. [1] Actually you can set the command at another level, check the ``DocumentGenerator`` class.
 
@@ -294,3 +320,6 @@ the average invoice and billing order, so pypfop came to relieve that pain.
 .. _mako: http://www.makotemplates.org/
 .. _cssutils: http://pypi.python.org/pypi/cssutils
 .. _`Apache FOP output formats`: https://xmlgraphics.apache.org/fop/1.1/output.html
+.. _`Data 2 Type tutorial`: http://www.data2type.de/en/xml-xslt-xslfo/xsl-fo/
+.. _`Report Lab PDF Toolkit`: https://pypi.python.org/pypi/reportlab
+.. _less: http://lesscss.org/
