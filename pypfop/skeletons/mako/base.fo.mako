@@ -10,9 +10,9 @@
       <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	    <rdf:Description rdf:about=""  xmlns:dc="http://purl.org/dc/elements/1.1/">
           <!-- Dublin Core properties go here -->
-          <dc:title>${title or ''}</dc:title>
-          <dc:creator>${author or ''}</dc:creator>
-          <dc:description>${subject or ''}</dc:description>
+          <dc:title>${TITLE or ''}</dc:title>
+          <dc:creator>${AUTHOR or ''}</dc:creator>
+          <dc:description>${SUBJECT or ''}</dc:description>
 	    </rdf:Description>
 	    <rdf:Description rdf:about=""  xmlns:xmp="http://ns.adobe.com/xap/1.0/">
           <!-- XMP properties go here -->

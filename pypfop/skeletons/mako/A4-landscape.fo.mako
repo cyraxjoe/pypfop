@@ -3,8 +3,8 @@
     <simple-page-master  master-name="${self.attr.MASTER_NAME}"
                          page-width="210mm"
                          page-height="297mm" >
-        <region-body margin="1cm"/>
-        <region-after extent="1cm"/>
+        <region-body margin="${REGION_BODY_MARGIN or '1cm'}"/>
+        <region-after extent="${REGION_AFTER_EXTEND or '1cm'}"/>
     </simple-page-master>
 </%block>
 ${next.body()}
