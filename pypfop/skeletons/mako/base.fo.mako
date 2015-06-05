@@ -23,7 +23,7 @@
   </declarations>
   <page-sequence master-reference="${self.attr.MASTER_NAME}">
     <static-content flow-name="xsl-region-after">
-      <%block name="rfooter"> <block /> </%block>
+      <%block name="region_after"> <block /> </%block>
     </static-content>
 % if FONT_SIZE and FONT_FAMILY:
     <flow flow-name="xsl-region-body" font-size="${FONT_SIZE}" font-family="${FONT_FAMILY}">
