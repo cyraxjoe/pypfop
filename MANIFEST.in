@@ -1,4 +1,0 @@
-recursive-include pypfop *.mako
-recursive-include examples *.css *.mako *.py
-include LICENSE.txt
-include CHANGES.txt
