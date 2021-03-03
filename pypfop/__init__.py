@@ -1,14 +1,19 @@
 import os
-import sys
+import logging
 
-import pypfop._logging_setup
 from pypfop.document_generator import DocumentGenerator
-from pypfop.utils import ensure_fop, ensure_fops
 
-__version__ = '0.3.0a'
+__version__ = '1.0'
 __version_info__ = __version__.split('.')
-__all__ = [
-    'DocumentGenerator', 'ensure_fop', 'ensure_fops', 'BASEDIR'
-]
+__all__ = ['DocumentGenerator', 'BASEDIR']
 
 BASEDIR = os.path.join(os.getcwd(), os.path.dirname(__file__))
+
+# configure the base logger
+_log_handler = logging.StreamHandler()
+_log_handler.setFormatter(logging.Formatter())
+_logger = logging.getLogger(__name__)
+_logger.setLevel(logging.INFO)
+_logger.addHandler(_log_handler)
+# we no longer need this references
+del _logger, _log_handler, logging, os
