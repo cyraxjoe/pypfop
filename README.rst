@@ -3,21 +3,7 @@
 Python Preprocessor of the Formatting Objects Processor [pypfop]
 ================================================================
 
-Document preprocessor for `Apache FOP`_.
-
-How does it work?
------------------
-
-It does what the huge title is implying, preprocess a *higher* level template
-to generate *dynamically* an specific `XSL-FO`_ document, which then gets
-fed to `Apache FOP`_ and generate the expected output. So that means that
-this packages *requires Java*  ``>_<'``, but fear not! It is almost transparent
-to the python application.
-
-In general the internal workflow is::
-
-    template ->  mako -> apply css ->  xsl-fo ->  fop -> *Document*
-
+Generate PDF files [1]_ based on `Apache FOP`_.
 
 Installation
 ------------
@@ -30,8 +16,8 @@ Installation
 
    #. Download the binary package of fop (preferably 2.6) either the  zip_ or tar_ package.
    #. Decompress anywhere you like and set the environment variable ``FOP_CMD``
-      to the executable file ``fop`` on the decompressed folder or have the fopc command
-      in your ``PATH``. [1]_
+      to the executable file ``fop`` on the decompressed folder or have the ``fop`` command
+      in your ``PATH``. [2]_
 
 Quick start
 -----------
@@ -68,6 +54,20 @@ Alternatively there is decorator based syntax:
    pdf_path = hello_world()
 
    print("The document has been generated at {}".format(pdf_path))
+
+
+How does it work?
+-----------------
+
+It does what the huge title is implying, preprocess a *higher* level template
+to generate *dynamically* an specific `XSL-FO`_ document, which then gets
+fed to `Apache FOP`_ and generate the expected output. So that means that
+this packages *requires Java*  ``>_<'``, but fear not! It is almost transparent
+to the python application.
+
+In general the internal workflow is::
+
+    template ->  mako -> apply css ->  xsl-fo ->  fop -> *Document*
 
 
 
@@ -132,8 +132,8 @@ of mako (which is pretty straight forward) and hopefully contribute back
 to the project :).
 
 For example, the previous table can be generated with this mako template
-assuming the `header` and `rows` variables are passed to the
-`DocumentGenerator.generate` method:
+assuming the `header` and `rows` variables are passed as parameters:
+
 
 .. code-block:: mako
 
@@ -291,8 +291,63 @@ For example I could define the style for the previous table in three files.
 Generate the document
 ^^^^^^^^^^^^^^^^^^^^^
 
-There are a few different ways to implement the ``Document`` class,
-but for the sake of simplicity this is a way to generate the document:
+There are a few different ways to generate a document.
+
+
+Single function call
+%%%%%%%%%%%%%%%%%%%%
+
+.. code-block:: python
+
+  import pypfop
+
+  params = {
+     'header': ['Project', 'Website', 'Language', 'Notes'],
+     'rows': [
+       ('pypfop', 'https://github.com/cyraxjoe/pypfop',
+        'Python', 'Abstraction on top of Apache FOP'),
+       ('Apache FOP', 'https://xmlgraphics.apache.org/fop/',
+       'Java', '')
+     ]
+  }
+
+  doc_path = pypfop.generate_document(
+      "sample-table.fo.mako", "simple_table.css"
+  ) # returns the path of the generated file.
+
+  print(doc_path)
+
+
+
+Decorator based
+%%%%%%%%%%%%%%%
+
+.. code-block:: python
+
+  import pypfop
+
+  document = pypfop.make_document_decorator()
+
+  @document("simple-table.fo.mako", "simple_table.css")
+  def simple_table():
+      return {
+         'header': ['Project', 'Website', 'Language', 'Notes'],
+         'rows': [
+           ('pypfop', 'https://github.com/cyraxjoe/pypfop',
+            'Python', 'Abstraction on top of Apache FOP'),
+           ('Apache FOP', 'https://xmlgraphics.apache.org/fop/',
+           'Java', '')
+         ]
+       }
+
+  doc_path = simple_table() # returns the path of the generated file.
+
+  print(doc_path)
+
+
+
+Explicit construction
+%%%%%%%%%%%%%%%%%%%%%%
 
 .. code-block:: python
 
@@ -303,16 +358,17 @@ but for the sake of simplicity this is a way to generate the document:
   params = {
     'header': ['Project', 'Website', 'Language', 'Notes'],
     'rows': [
-      ('pypfop', 'https://github.com/cyraxjoe/pypfop', 'Python', 'Abstraction on top of Apache FOP'),
+      ('pypfop', 'https://github.com/cyraxjoe/pypfop',
+       'Python', 'Abstraction on top of Apache FOP'),
       ('Apache FOP', 'https://xmlgraphics.apache.org/fop/', 'Java', '')
     ]
   }
-  doc = pypfop.DocumentGenerator(tfactory('simple-table.fo.mako'),
-                                 'simple_table.css')
-  print(doc.generate(params)) # returns the path of the generated file.
+  doc_gen = pypfop.DocumentGenerator(tfactory('simple-table.fo.mako'), 'simple_table.css')
+  doc_path = doc_gen.generate(params) # returns the path of the generated file.
+  print(doc_path)
 
 
-Supported Document formats
+Supported document formats
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In the previous example we didn't define the output of the ``Document`` in
@@ -328,16 +384,22 @@ are the almost the same as in `Apache FOP output formats`_.
  - txt
 
 
-The output format can be set in ``DocumentGenerator.__init__`` or
-``DocumentGenerator.generate`` ::
+The output format can be set in any of the supported methods:
 
-    doc = pypfop.DocumentGenerator(tfactory('simple-table.fo.mako'),
-                                   'simple_table.css',
-                                   oformat='rtf')
+.. code-block:: python
 
-or ::
+  # simple function call
+  pypfop.generate_document(
+      "sample-table.fo.mako", "simple_table.css", out_format='rtf'
+  ) 
 
-   doc.generate(params, oformat='rtf')
+  # decorator based
+  @document("simple-table.fo.mako", "simple_table.css", out_format='rtf')
+  def simple_table(): ...
+
+
+  # explicit method             
+  doc_gen.generate(params, out_format='rtf')
 
 
 About XSL-FO syntax
@@ -366,7 +428,8 @@ when the `Report Lab PDF Toolkit`_ was not yet available for Python 3 and I was 
 to have some kind of *template* to the very rigid format of the average invoice
 and billing order, so pypfop came to relieve that pain.
 
-.. [1] Actually you can set the command at another level, check the ``DocumentGenerator`` class.
+.. [1] Actually... you can generate more than PDFs as you will discover if you continue reading.
+.. [2] Actually... you can set the command at another level, check the ``pypfop.document_generator.DocumentGenerator`` class.
 
 .. _`Apache FOP`: https://xmlgraphics.apache.org/fop/
 .. _XSL-FO: https://en.wikipedia.org/wiki/XSL_Formatting_Objects
