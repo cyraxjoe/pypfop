@@ -28,9 +28,10 @@ Installation
 
 2. Install `Apache FOP`_:
 
-   #. Download the binary package of fop1.1 either the  zip_ or tar_ package.
+   #. Download the binary package of fop (preferably 2.6) either the  zip_ or tar_ package.
    #. Decompress anywhere you like and set the environment variable ``FOP_CMD``
-      to the executable file ``fop`` on the decompressed folder. [1]_
+      to the executable file ``fop`` on the decompressed folder or have the fopc command
+      in your ``PATH``. [1]_
 
 Usage
 -----
