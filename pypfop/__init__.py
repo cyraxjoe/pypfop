@@ -2,12 +2,21 @@ import os
 import logging
 
 from pypfop.document_generator import DocumentGenerator
+from pypfop.helpers import (
+    make_document_decorator,
+    get_mako_template_factory,
+    get_document_generator,
+    generate_document
+)
 
-__version__ = '1.0'
+__version__ = '1.0a1'
 __version_info__ = __version__.split('.')
-__all__ = ['DocumentGenerator', 'BASEDIR']
+__all__ = [
+    'DocumentGenerator',
+    'make_document_decorator', 'get_mako_template_factory',
+    'get_document_generator', 'generate_document'
+]
 
-BASEDIR = os.path.join(os.getcwd(), os.path.dirname(__file__))
 
 # configure the base logger
 _log_handler = logging.StreamHandler()

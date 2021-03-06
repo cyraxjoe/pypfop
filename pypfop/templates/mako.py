@@ -13,6 +13,7 @@ def get_lookup(lookup_dirs, input_enc='utf-8', output_enc='utf-8'):
                                       input_encoding=input_enc,
                                       output_encoding=output_enc)
 
+
 class Template(pypfop.templates.Template):
 
     def __init__(self, template_path, lookup):
@@ -25,7 +26,8 @@ class Template(pypfop.templates.Template):
             return template.render(**params)
         except Exception:
             raise pypfop.exceptions.TemplateError(
-                mako.exceptions.text_error_template().render())
+                mako.exceptions.text_error_template().render()
+            )
 
 
 class Factory(pypfop.templates.Factory):
@@ -40,10 +42,10 @@ class Factory(pypfop.templates.Factory):
 
     def _get_lookup_dirs(self, lookup_dirs, use_skels):
         if lookup_dirs is None:
-            lookup_dirs = ['.',]
+            lookup_dirs = ['.', ]
         else:
             if isinstance(lookup_dirs, str):
-                lookup_dirs = [lookup_dirs,]
+                lookup_dirs = [lookup_dirs, ]
             else:
                 lookup_dirs = list(lookup_dirs)
         if use_skels:

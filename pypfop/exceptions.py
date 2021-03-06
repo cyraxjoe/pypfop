@@ -16,6 +16,7 @@ class BuilderError(PypfopError):
     the fo template an actual document.
     """
 
+
 class TemplateError(PypfopError):
     """Exception that is intented to be used on the case of an
     error at the template level, this is for example a mako

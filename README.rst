@@ -296,7 +296,7 @@ How about a CSS pre-processor and base generic styles?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 I'm looking to add support for less_ or something similar and try to generalize
-the styling of fonts, colors, tables, etc. Very much in the *boostrap* sense
+the styling of fonts, colors, tables, etc. Very much in the *bootstrap* sense
 of the things. If you are interested in something similar we can join forces
 and build something nice.
 
@@ -305,8 +305,8 @@ Why!
 
 The project used to be part of a larger project of one of my clients,
 on which I decide early on that I will *only use python 3*, terrible decision
-if you want to generate pdf files easily or at least at the moment when the
-`Report Lab PDF Toolkit`_ was not yet available for Python 3 and I was looking
+if you want to generate pdf files easily or at least at the time (2012 I believe?)
+when the `Report Lab PDF Toolkit`_ was not yet available for Python 3 and I was looking
 to have some kind of *template* to the very rigid format of the average invoice
 and billing order, so pypfop came to relieve that pain.
 
@@ -314,12 +314,12 @@ and billing order, so pypfop came to relieve that pain.
 
 .. _`Apache FOP`: https://xmlgraphics.apache.org/fop/
 .. _XSL-FO: https://en.wikipedia.org/wiki/XSL_Formatting_Objects
-.. _zip: http://apache.webxcreen.org/xmlgraphics/fop/binaries/fop-1.1-bin.zip
-.. _tar: http://apache.webxcreen.org/xmlgraphics/fop/binaries/fop-1.1-bin.tar.gz
-.. _`XML Bible`:  http://www.ibiblio.org/xml/books/bible3/chapters/ch16.html
+.. _zip: https://www.apache.org/dyn/closer.cgi?filename=/xmlgraphics/fop/binaries/fop-2.6-bin.zip&action=download
+.. _tar: https://www.apache.org/dyn/closer.cgi?filename=/xmlgraphics/fop/binaries/fop-2.6-bin.tar.gz&action=download
+.. _`XML Bible`: http://www.ibiblio.org/xml/books/bible3/chapters/ch16.html
 .. _mako: http://www.makotemplates.org/
 .. _cssutils: http://pypi.python.org/pypi/cssutils
 .. _`Apache FOP output formats`: https://xmlgraphics.apache.org/fop/1.1/output.html
 .. _`Data 2 Type tutorial`: http://www.data2type.de/en/xml-xslt-xslfo/xsl-fo/
-.. _`Report Lab PDF Toolkit`: https://pypi.python.org/pypi/reportlab
+.. _`Report Lab PDF Toolkit`: https://pypi.org/project/reportlab/
 .. _less: http://lesscss.org/

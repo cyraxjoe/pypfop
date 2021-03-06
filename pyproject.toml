@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pypfop"
-version = "1.0"
+version = "1.0a1"
 description = "Document preprocessor for Apache FOP"
 authors = ["Joel Rivera <rivera@joel.mx>"]
 license = "Apache-2.0"
