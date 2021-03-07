@@ -377,13 +377,13 @@ In the previous example we didn't define the output of the ``Document`` in
 that case the default output of ``pdf`` is used, but the supported outputs
 are the almost the same as in `Apache FOP output formats`_.
 
- - pdf
- - rtf
- - tiff
- - png
- - pcl
- - ps
- - txt
+ * pdf
+ * rtf
+ * tiff
+ * png
+ * pcl
+ * ps
+ * txt
 
 
 The output format can be set in any of the supported methods:
