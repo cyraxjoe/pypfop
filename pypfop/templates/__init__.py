@@ -1,8 +1,14 @@
 import os
 
-import pypfop
 
-SKELDIR = os.path.join(pypfop.BASEDIR, 'skeletons')
+BASEDIR = os.path.abspath(
+    os.path.join(
+        os.getcwd(),
+        os.path.dirname(__file__),
+        '..'
+    )
+)
+SKELDIR = os.path.join(BASEDIR, 'skeletons')
 
 
 def skeleton_dir(template_type):
@@ -12,13 +18,13 @@ def skeleton_dir(template_type):
     return os.path.join(SKELDIR, template_type)
 
 
-class Template(object):
+class Template:
 
     def render(self, params):
         raise NotImplementedError()
 
 
-class Factory(object):
+class Factory:
     name = ''
 
     def __call__(self, template):

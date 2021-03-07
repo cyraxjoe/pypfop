@@ -3,7 +3,7 @@
 *~
 *orig
 \#*
-^build/
-^dist/
-^pypfop\.egg-info/
+build
+dist
+pypfop\.egg-info
 

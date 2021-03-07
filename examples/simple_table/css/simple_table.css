@@ -2,7 +2,7 @@
 @import url("colors.css");
 
 
-#main-table > table-header > table-row{
+#main-table  table-row{
     text-align: center;
     font-weight: bold;
 }

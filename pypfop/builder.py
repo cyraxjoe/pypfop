@@ -1,29 +1,26 @@
 import os
-import sys
 import subprocess
 import tempfile
+import shutil
+from http import HTTPStatus
+from urllib import request
+from urllib.error import URLError
+from urllib.parse import urlencode, urljoin
 
-from pypfop import compat
+
 from pypfop.exceptions import BuilderError
 
-if compat.PY3:
-    import http.client as httplib
-    import urllib.request as urllib2
-    from urllib.parse import urlencode, urljoin
-else:
-    import httplib
-    import urllib2 as urllib2
-    from urllib import urlencode
-    from urlparse import urljoin
 
 FOP_ENV_VAR = 'FOP_CMD'
 
-class Builder(object):
+
+class Builder:
     tempdir = tempfile.gettempdir()
 
     def _get_tempfile(self, oformat):
         fdesc, ofilepath = tempfile.mkstemp(
-            '.{}'.format(oformat), dir=self.tempdir)
+            '.{}'.format(oformat), dir=self.tempdir
+        )
         os.close(fdesc)
         return ofilepath
 
@@ -32,32 +29,36 @@ class Builder(object):
 
 
 class SubprocessBuilder(Builder):
-    """
-    Subprocess based document builder.
+    """Subprocess based document builder.
 
     It will create a subprocess for each document generation.
 
     This is the easiest way to locally generate a document,
-    with the side-effect on having a the jvm up-and-down each time
+    with the side-effect of having the jvm up-and-down each time
     a document gets generated.
     """
-    __fop_cmd__ = ''
 
-    def __init__(self, fop_cmd=None):
+    def __init__(self, fop_cmd=None, fop_cmd_extra_args=None):
         self.fop_cmd = self._find_fop_cmd(fop_cmd)
+        if fop_cmd_extra_args is None:
+            self.fop_cmd_extra_args = []
+        else:
+            self.fop_cmd_extra_args = list(fop_cmd_extra_args)
 
     def _find_fop_cmd(self, fop_cmd):
-        if fop_cmd is not None and fop_cmd:
+        if fop_cmd:
             return fop_cmd
-        if self.__fop_cmd__:
-            return self.__fop_cmd__
-        else:
-            try:
-                return os.environ[FOP_ENV_VAR]
-            except KeyError:
-                raise BuilderError(
-                    'Unable to find the path to execute FOP.'
-                    'Check the environment variable "%s"' % FOP_ENV_VAR)
+        cmd = os.environ.get(
+            FOP_ENV_VAR,
+            shutil.which("fop")
+        )
+        if cmd is None:
+            raise BuilderError(
+                'Unable to find the path to execute FOP.'
+                'Verify your PATH or the environment variable "{}"'
+                .format(FOP_ENV_VAR)
+            )
+        return cmd
 
     def __call__(self, xslfo, out_format, log):
         """
@@ -68,16 +69,16 @@ class SubprocessBuilder(Builder):
         the body will be the standard error of the fop command.
         """
         ofilepath = self._get_tempfile(out_format)
-        cmdargs = [self.fop_cmd, '-q', '-fo', '-',  # - == stdin
-                   '-{}'.format(out_format), ofilepath]
-        compat.debug_msg(log, 'cmdline %s' % cmdargs)
+        cmdargs = [self.fop_cmd, ] + self.fop_cmd_extra_args
+        cmdargs += ['-q', '-fo', '-', '-{}'.format(out_format), ofilepath]
+        log.debug('cmdline {}'.format(cmdargs))
         proc = subprocess.Popen(cmdargs,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         _, stderr = proc.communicate(xslfo)
         stderr = stderr.decode()
-        compat.debug_msg(log, stderr, 'STDERR of fop command')
+        log.debug('STDERR of fop command: {}'.format(stderr))
         if proc.returncode:  # != 0
             raise BuilderError(stderr)
         else:
@@ -98,8 +99,10 @@ class FopsBuilder(Builder):
     the cost of having another server running that implies using more ram.
     """
 
-    def __init__(self, host, port, protocol='http', url_opener=urllib2.urlopen,
-                 **kwargs):
+    def __init__(
+        self, host, port, protocol='http',
+        url_opener=request.urlopen, **kwargs
+    ):
         self.host = host
         self.port = port
         self.protocol = protocol
@@ -116,11 +119,11 @@ class FopsBuilder(Builder):
             raise TypeError('Missing required parameters "user" and "passwd".')
         user, passwd = kwargs['user'], kwargs['passwd']
         realm = kwargs.get('realm', 'FOP Server')
-        password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        password_mgr = request.HTTPPasswordMgrWithDefaultRealm()
         top_level_url = cls.server_url(host, port, protocol)
         password_mgr.add_password(realm, top_level_url, user, passwd)
-        handler = urllib2.HTTPBasicAuthHandler(password_mgr)
-        url_opener = urllib2.build_opener(handler)
+        handler = request.HTTPBasicAuthHandler(password_mgr)
+        url_opener = request.build_opener(handler)
         return cls(host, port, protocol, url_opener.open, **kwargs)
 
     def _server_url(self, ext):
@@ -129,11 +132,11 @@ class FopsBuilder(Builder):
     def __call__(self, xslfo, out_format, log):
         try:
             ofilepath = self._make_document(out_format, xslfo)
-        except urllib2.URLError as url_error:
-            raise BuilderError('Unable to build the document on the fops server\n{}'
-                               .format(url_error))
-        except:
-            raise
+        except URLError as url_error:
+            raise BuilderError(
+                'Unable to build the document on the fops server\n{}'
+                .format(url_error)
+            )
         else:
             return ofilepath
 
@@ -142,16 +145,20 @@ class FopsBuilder(Builder):
             'Content-Type': 'application/x-www-form-urlencoded; charset={}'
             .format(self.encoding)}
         data = urlencode({'document': xslfo}).encode(self.encoding)
-        return urllib2.Request(self._server_url(out_format), data=data, headers=headers)
+        return request.Request(
+            self._server_url(out_format), data=data, headers=headers
+        )
 
     def _make_document(self, out_format, xslfo):
         response = self.url_opener(self._build_request(out_format, xslfo))
-        if response.code == httplib.OK:
+        if response.code is HTTPStatus.OK:
             ofilepath = self._get_tempfile(out_format)
             with open(ofilepath, 'wb') as outfile:
                 for fragment in response:
                     outfile.write(fragment)
             return ofilepath
         else:
-            raise Exception('{}\r\n{} - code {}'.format(
-                response.read(), response.msg, response.code))
+            raise Exception(
+                '{}\r\n{} - code {}'
+                .format(response.read(), response.msg, response.code)
+            )

@@ -11,7 +11,7 @@ def _translate_stylesheet(stylesheet, translator):
         # If is an import rule, the generator is going to be recursive!
         if isinstance(rule, cssutils.css.CSSImportRule):
             for trans_rule in \
-                    _translate_stylesheet(rule.styleSheet, translator):
+              _translate_stylesheet(rule.styleSheet, translator):
                 yield trans_rule
         elif isinstance(rule, cssutils.css.CSSStyleRule):
             selector = rule.selectorText
@@ -45,16 +45,15 @@ def _foname(tag):
     """Append the fo: namespace to the tag.
     If the tag already have a namespace return the tag unmodified.
     """
-    # if no namespace is specified use the fo:
-    if not ':' in tag:
-        return 'fo:%s' % tag
-    else:
+    if ':' in tag:
         return tag
+    # if no namespace is specified use 'fo'.
+    return 'fo:{}'.format(tag)
 
 
 def translate_css_to_xpath(*sheets):
     gtrans = cssselect.GenericTranslator()
-    xpath_n_styles = [] # using a list, to be hable to "cascade".
+    xpath_n_styles = []  # using a list, to be hable to "cascade".
     for sheet_path in sheets:
         stylesheet = cssutils.parseFile(sheet_path)
         xpath_n_styles.extend(_translate_stylesheet(stylesheet, gtrans))

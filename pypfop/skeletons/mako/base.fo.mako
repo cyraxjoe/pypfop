@@ -1,7 +1,7 @@
 <%!
-   MASTER_NAME = 'master-page'
+MASTER_NAME = 'master-page'
 %>
-<root>
+<root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:fox="http://xmlgraphics.apache.org/fop/extensions">
   <layout-master-set>
     <%block name="_page_layout" />
   </layout-master-set>

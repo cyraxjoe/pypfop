@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "pypfop"
+version = "1.0a1"
+description = "Document preprocessor for Apache FOP"
+authors = ["Joel Rivera <rivera@joel.mx>"]
+license = "Apache-2.0"
+readme = "README.rst"
+homepage = "https://github.com/cyraxjoe/pypfop"
+classifiers = [
+     "Development Status :: 3 - Alpha",
+     "Intended Audience :: Developers",
+     "Operating System :: OS Independent",
+     "Programming Language :: Python :: 3",
+     "Topic :: Office/Business",
+     "Topic :: Software Development :: Libraries",
+     'Topic :: Text Processing :: Filters'
+]
+include = [
+    "LICENSE.txt",
+    "CHANGES.rst"
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+Mako = "^1.1.4"
+cssutils = "^1.0.2"
+cssselect = "^1.1.0"
+lxml = "^4.6.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+flake8 = "^3.8.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
