@@ -37,13 +37,13 @@ def get_mako_template_factory(lookup_dirs=None, use_skels=True):
 
 
 @functools.lru_cache
-def get_document_generator(template_path, **kwargs):
+def get_document_generator(template_path, *args, **kwargs):
     template_factory = get_mako_template_factory(
         kwargs.pop('lookup_dirs', None),
         kwargs.pop('use_skels', True)
     )
     template = template_factory(template_path)
-    return DocumentGenerator(template, **kwargs)
+    return DocumentGenerator(template, *args, **kwargs)
 
 
 @functools.lru_cache
@@ -58,6 +58,6 @@ def make_document_decorator(
     return dd.prepare
 
 
-def generate_document(template_path, template_params, **kwargs):
-    doc_gen = get_document_generator(template_path, **kwargs)
+def generate_document(template_path, template_params, *args, **kwargs):
+    doc_gen = get_document_generator(template_path, *args, **kwargs)
     return doc_gen.generate(template_params)

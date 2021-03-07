@@ -312,7 +312,9 @@ Single function call
   }
 
   doc_path = pypfop.generate_document(
-      "sample-table.fo.mako", "simple_table.css"
+      "sample-table.fo.mako",
+      params,
+      "simple_table.css"
   ) # returns the path of the generated file.
 
   print(doc_path)
@@ -391,14 +393,14 @@ The output format can be set in any of the supported methods:
   # simple function call
   pypfop.generate_document(
       "sample-table.fo.mako", "simple_table.css", out_format='rtf'
-  ) 
+  )
 
   # decorator based
   @document("simple-table.fo.mako", "simple_table.css", out_format='rtf')
   def simple_table(): ...
 
 
-  # explicit method             
+  # explicit method
   doc_gen.generate(params, out_format='rtf')
 
 
