@@ -93,7 +93,7 @@ class DocumentGenerator:
         expected_args = 1
         if inspect.ismethod(template.render):
             expected_args = 2
-        if len(inspect.getargspec(template.render).args) != expected_args:
+        if len(inspect.getfullargspec(template.render).args) != expected_args:
             raise DocumentGeneratorError(
                 'The template object {} does not implement '
                 'a 1 argument "render" property (method)'
