@@ -107,6 +107,7 @@ class DocumentGenerator:
                     'The template object {} does not implement '
                     'a 1 argument "render" property (method)'
                     .format(template)
+                )
             return template    
         if len(inspect.getfullargspec(template.render).args) != expected_args:
             raise DocumentGeneratorError(
