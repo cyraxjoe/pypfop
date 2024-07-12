@@ -2,6 +2,7 @@ import os
 import logging
 import inspect
 import itertools
+from sys import version_info
 
 from pypfop.conversion import xml_to_fo_with_style
 from pypfop.builder import SubprocessBuilder, FopsBuilder
@@ -93,6 +94,20 @@ class DocumentGenerator:
         expected_args = 1
         if inspect.ismethod(template.render):
             expected_args = 2
+        if version_info[0] >= 3 and version_info[1] >= 11: #Python Version >= 3.11
+            if len(inspect.getfullargspec(template.render).args) != expected_args:
+                raise DocumentGeneratorError(
+                    'The template object {} does not implement '
+                    'a 1 argument "render" property (method)'
+                    .format(template)
+                )
+        else:
+            if len(inspect.getargspec(template.render).args) != expected_args:
+                raise DocumentGeneratorError(
+                    'The template object {} does not implement '
+                    'a 1 argument "render" property (method)'
+                    .format(template)
+            return template    
         if len(inspect.getfullargspec(template.render).args) != expected_args:
             raise DocumentGeneratorError(
                 'The template object {} does not implement '
