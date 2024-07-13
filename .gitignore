@@ -6,4 +6,5 @@
 build
 dist
 pypfop\.egg-info
-
+.coverage
+.python-version
