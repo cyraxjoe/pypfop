@@ -161,5 +161,8 @@ class DocumentGenerator:
             out_format = self.out_format
         else:
             out_format = self._check_out_format(out_format)
-        xslfo = self._generate_xslfo(params, copy_params)
+        if "xslfo" not in params:    
+            xslfo = self._generate_xslfo(params, copy_params)
+        else:
+            xslfo = params.xslfo
         return self.builder(xslfo, out_format, self.log)
