@@ -164,5 +164,5 @@ class DocumentGenerator:
         if "xslfo" not in params:    
             xslfo = self._generate_xslfo(params, copy_params)
         else:
-            xslfo = params.xslfo
+            xslfo = params["xslfo"]
         return self.builder(xslfo, out_format, self.log)
